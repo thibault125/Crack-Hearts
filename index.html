@@ -10,6 +10,91 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <style>
+        /* Styles pour les prix et le bouton personnalisé */
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 15px 0;
+            display: inline-block;
+            background: var(--primary-light);
+            padding: 5px 15px;
+            border-radius: 50px;
+        }
+        
+        .product-price small {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        
+        .btn-personnaliser {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--dark-color);
+            padding: 16px 38px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(251, 186, 59, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+        }
+        
+        .btn-personnaliser:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(251, 186, 59, 0.4);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #ffb700 100%);
+        }
+        
+        .btn-personnaliser i {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-personnaliser:hover i {
+            transform: translateX(5px);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin: 40px 0 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(251, 186, 59, 0.1) 0%, rgba(255, 210, 128, 0.1) 100%);
+            border-radius: var(--border-radius);
+        }
+        
+        .btn-container p {
+            margin-top: 15px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        .btn-container p i {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        
+        /* Ajustement pour la grille produits */
+        .product-info {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-tag {
+            margin-top: auto;
+        }
+    </style>
 </head>
 <body>
     <!-- En-tête et navigation -->
@@ -61,6 +146,7 @@
             <p class="section-subtitle">Chaque saveur raconte une histoire. Laquelle fera battre votre cœur ?</p>
             
             <div class="products-grid">
+                <!-- Haine & Passion - 1,53 € -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="Affiche Haine & Passion.jpg" alt="Haine & Passion - Oignon Crémeux">
@@ -68,11 +154,13 @@
                     <div class="product-info">
                         <h3 class="product-name">Haine & Passion</h3>
                         <p class="product-flavor">Oignon Crémeux</p>
+                        <div class="product-price">1,53 € <small>le sachet (150g)</small></div>
                         <p class="product-desc">Une alliance audacieuse entre l'intensité de l'oignon et la douceur crémeuse qui surprendra vos papilles.</p>
                         <span class="product-tag">Douceur & Intensité</span>
                     </div>
                 </div>
                 
+                <!-- Douce Tentations - 1,39 € -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="Affiche Douce Tentations.jpg" alt="Douce Tentations - BBQ Bacon">
@@ -80,11 +168,13 @@
                     <div class="product-info">
                         <h3 class="product-name">Douce Tentations</h3>
                         <p class="product-flavor">BBQ Bacon</p>
+                        <div class="product-price">1,39 € <small>le sachet (150g)</small></div>
                         <p class="product-desc">Un mariage savoureux entre le fumé du barbecue et le bacon croustillant pour les amateurs de goûts puissants.</p>
                         <span class="product-tag">Fumé & Croustillant</span>
                     </div>
                 </div>
                 
+                <!-- Coeur Brulant - 1,75 € -->
                 <div class="product-card">
                     <div class="product-image">
                         <img src="Affiche Coeur Brulant.jpg" alt="Coeur Brulant - Piment Ultra Fort">
@@ -92,10 +182,23 @@
                     <div class="product-info">
                         <h3 class="product-name">Coeur Brulant</h3>
                         <p class="product-flavor">Piment Ultra Fort</p>
+                        <div class="product-price">1,75 € <small>le sachet (150g)</small></div>
                         <p class="product-desc">Pour les plus audacieux, une explosion de piment qui enflammera vos papilles et défiera vos sens.</p>
                         <span class="product-tag">Audacieux & Intense</span>
                     </div>
                 </div>
+            </div>
+            
+            <!-- BOUTON POUR PERSONNALISER SA COMMANDE -->
+            <div class="btn-container">
+                <a href="offre.html" class="btn-personnaliser">
+                    <i class="fas fa-shopping-basket"></i> Personnalisez votre commande
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <p>
+                    <i class="fas fa-heart"></i> Choisissez librement le nombre de sachets par saveur 
+                    <i class="fas fa-heart"></i>
+                </p>
             </div>
             
             <div class="products-cta">
