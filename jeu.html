@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crack Hearts - Mini-Jeu</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/jeu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Styles spécifiques au jeu Asteroid Assault -->
+    <style>
+        /* Réinitialisation des styles pour éviter les conflits */
+        .game-wrapper *,
+        #game-container *,
+        #game-container button,
+        #game-container p,
+        #game-container h1,
+        #game-container h2 {
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --game-bg-color: #0a0a2a;
+            --player-color: #4dffea;
+            --normal-enemy-color: #ffd700;
+            --special-enemy-color: #b0b0b0;
+            --bullet-color: #ffff00;
+            --game-text-color: #ffffff;
+            --ui-bg: rgba(0, 0, 0, 0.7);
+            --explosion-color: #ff9900;
+            --title-glow: rgba(77, 255, 234, 0.7);
+        }
+
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #111;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            border: 2px dashed #ff69b4;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 600px;
+            box-shadow: 0 0 30px rgba(77, 255, 234, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        #game-canvas {
+            background-color: var(--game-bg-color);
+            border: 2px solid #333;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: var(--ui-bg);
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 5;
+            border: 1px solid rgba(77, 255, 234, 0.5);
+            box-shadow: 0 0 15px rgba(77, 255, 234, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 220px;
+        }
+
+        #score,
+        #lives {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: var(--game-text-color);
+        }
+
+        #score::before {
+            content: "★";
+            margin-right: 8px;
+            color: var(--bullet-color);
+            font-size: 20px;
+        }
+
+        #lives::before {
+            content: "❤";
+            margin-right: 8px;
+            color: #ff4444;
+            font-size: 20px;
+        }
+
+        .enemy-info {
+            font-size: 14px;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            color: var(--game-text-color);
+        }
+
+        .enemy-type {
+            display: flex;
+            align-items: center;
+        }
+
+        .normal-asteroid::before {
+            content: "●";
+            margin-right: 8px;
+            color: var(--normal-enemy-color);
+            font-size: 16px;
+        }
+
+        .special-asteroid::before {
+            content: "◆";
+            margin-right: 8px;
+            color: var(--special-enemy-color);
+            font-size: 16px;
+        }
+
+        #start-screen,
+        #game-over-screen,
+        #pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 10;
+            text-align: center;
+        }
+
+        #game-over-screen,
+        #pause-screen {
+            display: none;
+        }
+
+        .game-title {
+            font-size: 50px;
+            margin-bottom: 25px;
+            color: var(--player-color);
+            text-shadow: 0 0 10px var(--title-glow), 0 0 20px var(--title-glow);
+            letter-spacing: 3px;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                text-shadow: 0 0 10px var(--title-glow), 0 0 20px var(--title-glow);
+            }
+
+            50% {
+                text-shadow: 0 0 15px var(--title-glow), 0 0 30px var(--title-glow), 0 0 40px var(--title-glow);
+            }
+
+            100% {
+                text-shadow: 0 0 10px var(--title-glow), 0 0 20px var(--title-glow);
+            }
+        }
+
+        .game-title::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--player-color), transparent);
+        }
+
+        #game-container h2 {
+            font-size: 36px;
+            margin-bottom: 25px;
+            color: var(--player-color);
+            text-shadow: 0 0 10px rgba(77, 255, 234, 0.7);
+        }
+
+        #game-container p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            text-align: center;
+            max-width: 85%;
+            line-height: 1.6;
+            color: var(--game-text-color);
+        }
+
+        #game-container button {
+            background-color: var(--player-color);
+            color: var(--game-bg-color);
+            border: none;
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 8px;
+            box-shadow: 0 0 15px rgba(77, 255, 234, 0.5);
+        }
+
+        #game-container button:hover {
+            background-color: #3ac9b7;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(77, 255, 234, 0.7);
+        }
+
+        #instructions {
+            margin-top: 25px;
+            font-size: 16px;
+            color: #aaa;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .difficulty-buttons button {
+            background-color: #444;
+            box-shadow: none;
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+
+        .difficulty-buttons button.active {
+            background-color: var(--player-color);
+            box-shadow: 0 0 10px rgba(77, 255, 234, 0.5);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 25px;
+        }
+
+        .stat {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 18px;
+            color: var(--game-text-color);
+        }
+
+        .high-score {
+            color: var(--bullet-color);
+        }
+
+        .level {
+            color: var(--player-color);
+        }
+
+        .asteroid-info {
+            display: flex;
+            gap: 25px;
+            margin: 20px 0;
+        }
+
+        .asteroid-type {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--game-text-color);
+        }
+
+        .asteroid-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .normal-asteroid-icon {
+            color: var(--normal-enemy-color);
+        }
+
+        .special-asteroid-icon {
+            color: var(--special-enemy-color);
+        }
+
+        #level-display {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--ui-bg);
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 5;
+            border: 1px solid rgba(77, 255, 234, 0.5);
+            box-shadow: 0 0 15px rgba(77, 255, 234, 0.4);
+            font-weight: bold;
+            color: var(--player-color);
+        }
+        
+        .game-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .game-controls button {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: none;
+            margin: 0;
+        }
+        
+        .game-controls button:hover {
+            background-color: #ff1493;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .game-description {
+            text-align: center;
+            margin: 20px 0;
+            color: #fff;
+            font-size: 1.1rem;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête et navigation -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo_Logo Orange.png" alt="Crack Hearts" class="logo-img">
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="index.html#produits">Produits</a></li>
+                    <li><a href="index.html#apropos">À propos</a></li>
+                    <li><a href="jeu.html" class="active">Mini-Jeu</a></li>
+                    <li><a href="https://www.tiktok.com/@crackhearth69" target="_blank">TikTok</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Section principale du jeu -->
+    <main class="jeu-container">
+        <div class="container">
+            <h1 class="jeu-title">Mini-Jeu Crack Hearts</h1>
+            <p class="jeu-subtitle">Tente de survivre à l'assaut des astéroïdes ! 🎮</p>
+            
+            <!-- Zone du jeu - Conteneur avec bordures pointillées -->
+            <div class="jeu-zone">
+                <div class="game-wrapper">
+                    <p class="game-description">Pilotez votre vaisseau à travers un champ d'astéroïdes ! Évitez les collisions et tirez sur les astéroïdes pour gagner des points. Les astéroïdes spéciaux (gris) nécessitent 3 tirs pour être détruits mais rapportent plus de points.</p>
+                    
+                    <div id="game-container">
+                        <canvas id="game-canvas" width="1000" height="600"></canvas>
+
+                        <div id="ui-container">
+                            <div id="score">Score: 0</div>
+                            <div id="lives">Vies: 3</div>
+                            <div id="enemy-info">
+                                <div class="enemy-type normal-asteroid">Normal - 1 coup</div>
+                                <div class="enemy-type special-asteroid">Spécial - 3 coups</div>
+                            </div>
+                        </div>
+
+                        <div id="level-display">Niveau: 1</div>
+
+                        <div id="start-screen">
+                            <h1 class="game-title">Asteroid Assault</h1>
+                            <p>Votre vaisseau est pris dans un champ d'astéroïdes ! Utilisez vos compétences de pilotage pour survivre le plus longtemps possible.</p>
+                            <p>Contrôlez votre vaisseau avec les flèches et tirez avec la barre d'espace.</p>
+
+                            <div class="asteroid-info">
+                                <div class="asteroid-type">
+                                    <div class="asteroid-icon normal-asteroid-icon">●</div>
+                                    <div>Astéroïde Normal</div>
+                                    <div>1 coup - 10 pts</div>
+                                </div>
+                                <div class="asteroid-type">
+                                    <div class="asteroid-icon special-asteroid-icon">◆</div>
+                                    <div>Astéroïde Spécial</div>
+                                    <div>3 coups - 50 pts</div>
+                                </div>
+                            </div>
+
+                            <div class="difficulty-buttons">
+                                <button id="easy-btn" class="active">Facile</button>
+                                <button id="medium-btn">Moyen</button>
+                                <button id="hard-btn">Difficile</button>
+                            </div>
+
+                            <button id="start-button">Lancer l'Assaut</button>
+
+                            <div class="game-stats">
+                                <div class="stat high-score">Meilleur score: <span id="high-score-value">0</span></div>
+                                <div class="stat level">Niveau: <span id="current-level">1</span></div>
+                            </div>
+
+                            <div id="instructions">
+                                Flèches: Déplacer | Espace: Tirer | P: Pause
+                            </div>
+                        </div>
+
+                        <div id="game-over-screen">
+                            <h2>Mission Échouée</h2>
+                            <p>Votre vaisseau n'a pas survécu à l'assaut des astéroïdes.</p>
+                            <p id="final-score">Votre score: 0</p>
+                            <button id="restart-button">Nouvel Assaut</button>
+                            <button id="menu-button">Menu Principal</button>
+                        </div>
+
+                        <div id="pause-screen">
+                            <h2>Assaut en Pause</h2>
+                            <p>La mission est temporairement interrompue</p>
+                            <button id="resume-button">Reprendre l'Assaut</button>
+                            <button id="menu-button-pause">Menu Principal</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-controls">
+                        <button onclick="showInstructions()"><i class="fas fa-info-circle"></i> Instructions</button>
+                        <button onclick="resetHighScore()"><i class="fas fa-redo"></i> Réinitialiser le meilleur score</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="instructions">
+                <h2><i class="fas fa-gamepad"></i> Comment jouer ?</h2>
+                <div class="instructions-grid">
+                    <div class="instruction-card">
+                        <div class="instruction-icon">1</div>
+                        <h3>Contrôlez votre vaisseau</h3>
+                        <p>Utilisez les flèches directionnelles pour déplacer votre vaisseau et évitez les astéroïdes</p>
+                    </div>
+                    <div class="instruction-card">
+                        <div class="instruction-icon">2</div>
+                        <h3>Tirez sur les astéroïdes</h3>
+                        <p>Appuyez sur la barre d'espace pour tirer et détruire les astéroïdes</p>
+                    </div>
+                    <div class="instruction-card">
+                        <div class="instruction-icon">3</div>
+                        <h3>Survivez le plus longtemps</h3>
+                        <p>Les astéroïdes normaux (jaunes) valent 10 points, les spéciaux (gris) valent 50 points</p>
+                    </div>
+                    <div class="instruction-card">
+                        <div class="instruction-icon">4</div>
+                        <h3>Défie tes amis</h3>
+                        <p>Partage ton score sur les réseaux sociaux</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Classement (futur) -->
+            <div class="classement">
+                <h2><i class="fas fa-trophy"></i> Classement</h2>
+                <p>Votre meilleur score: <span id="best-score-display">0</span></p>
+                <div class="classement-placeholder">
+                    <p><i class="fas fa-spinner fa-spin"></i> Classement des scores à venir prochainement...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="Logo_Logo Orange.png" alt="Crack Hearts" class="footer-logo-img">
+                    <p class="footer-tagline">Always deliciously distracting</p>
+                    <p>L'apéro qui fait battre les cœurs !</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="index.html#produits">Nos produits</a></li>
+                            <li><a href="index.html#apropos">À propos</a></li>
+                            <li><a href="jeu.html">Mini-jeu</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Suivez-nous</h4>
+                        <ul>
+                            <li><a href="https://www.tiktok.com/@crackhearth69" target="_blank">
+                                <i class="fab fa-tiktok"></i> TikTok @crackhearth69
+                            </a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                            <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Crack Hearts. Tous droits réservés.</p>
+                <p>Site créé avec ❤️ pour les amateurs de snacks originaux</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script du jeu Asteroid Assault -->
+    <script>
+        // Configuration du jeu
+        const config = {
+            easy: {
+                playerSpeed: 8,
+                bulletSpeed: 7,
+                enemySpeed: 2,
+                enemySpawnRate: 60,
+                maxEnemies: 8,
+                specialAsteroidChance: 0.2
+            },
+            medium: {
+                playerSpeed: 8,
+                bulletSpeed: 7,
+                enemySpeed: 3,
+                enemySpawnRate: 45,
+                maxEnemies: 12,
+                specialAsteroidChance: 0.3
+            },
+            hard: {
+                playerSpeed: 8,
+                bulletSpeed: 7,
+                enemySpeed: 4,
+                enemySpawnRate: 30,
+                maxEnemies: 15,
+                specialAsteroidChance: 0.4
+            }
+        };
+
+        // Éléments du DOM
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const pauseScreen = document.getElementById('pause-screen');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+        const resumeButton = document.getElementById('resume-button');
+        const menuButton = document.getElementById('menu-button');
+        const menuButtonPause = document.getElementById('menu-button-pause');
+        const scoreDisplay = document.getElementById('score');
+        const livesDisplay = document.getElementById('lives');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const easyBtn = document.getElementById('easy-btn');
+        const mediumBtn = document.getElementById('medium-btn');
+        const hardBtn = document.getElementById('hard-btn');
+        const highScoreValue = document.getElementById('high-score-value');
+        const currentLevel = document.getElementById('current-level');
+        const levelDisplay = document.getElementById('level-display');
+        const bestScoreDisplay = document.getElementById('best-score-display');
+
+        // Variables du jeu
+        let gameActive = false;
+        let gamePaused = false;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let highScore = localStorage.getItem('asteroidAssaultHighScore') || 0;
+        let player = {};
+        let bullets = [];
+        let enemies = [];
+        let explosions = [];
+        let stars = [];
+        let particles = [];
+        let keys = {};
+        let enemySpawnCounter = 0;
+        let currentDifficulty = 'easy';
+        let gameConfig = config.easy;
+        let lastTime = 0;
+        let deltaTime = 0;
+
+        // Types d'astéroïdes
+        const ASTEROID_TYPES = {
+            NORMAL: {
+                color: '#ffd700', // Jaune
+                hitsRequired: 1,
+                points: 10,
+                radius: [20, 30]
+            },
+            SPECIAL: {
+                color: '#b0b0b0', // Gris
+                hitsRequired: 3,
+                points: 50,
+                radius: [25, 35]
+            }
+        };
+
+        // Initialisation du jeu
+        function initGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            bullets = [];
+            enemies = [];
+            explosions = [];
+            particles = [];
+            enemySpawnCounter = 0;
+            gamePaused = false;
+
+            // Mettre à jour l'affichage du meilleur score
+            highScoreValue.textContent = highScore;
+            bestScoreDisplay.textContent = highScore;
+            currentLevel.textContent = level;
+
+            // Création du joueur
+            player = {
+                x: canvas.width / 2,
+                y: canvas.height - 80,
+                width: 50,
+                height: 50,
+                speed: gameConfig.playerSpeed,
+                canShoot: true,
+                lastShot: 0,
+                shootDelay: 200
+            };
+
+            // Créer des étoiles pour le fond
+            stars = [];
+            for (let i = 0; i < 150; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.5 + 0.1,
+                    brightness: Math.random() * 0.5 + 0.5
+                });
+            }
+
+            updateUI();
+        }
+
+        // Mise à jour de l'interface utilisateur
+        function updateUI() {
+            scoreDisplay.textContent = `Score: ${score}`;
+            livesDisplay.textContent = `Vies: ${lives}`;
+            levelDisplay.textContent = `Niveau: ${level}`;
+            bestScoreDisplay.textContent = highScore;
+
+            // Mettre à jour le niveau en fonction du score
+            const newLevel = Math.floor(score / 500) + 1;
+            if (newLevel > level) {
+                level = newLevel;
+                currentLevel.textContent = level;
+                levelDisplay.textContent = `Niveau: ${level}`;
+
+                // Ajouter un effet visuel pour le changement de niveau
+                createLevelUpEffect();
+            }
+        }
+
+        // Effet visuel pour le changement de niveau
+        function createLevelUpEffect() {
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    size: Math.random() * 5 + 2,
+                    speedX: (Math.random() - 0.5) * 10,
+                    speedY: (Math.random() - 0.5) * 10,
+                    color: `hsl(${Math.random() * 60 + 180}, 100%, 50%)`,
+                    life: 30
+                });
+            }
+        }
+
+        // Dessin du fond étoilé
+        function drawBackground() {
+            // Fond spatial
+            ctx.fillStyle = '#0a0a2a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Dessiner les étoiles
+            stars.forEach(star => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Déplacer les étoiles
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+            });
+        }
+
+        // Dessin des particules
+        function drawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Mettre à jour la position
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.life--;
+
+                // Supprimer les particules mortes
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // Dessin du joueur
+        function drawPlayer() {
+            ctx.fillStyle = 'var(--player-color)';
+
+            // Corps du vaisseau
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - player.height / 2);
+            ctx.lineTo(player.x - player.width / 2, player.y + player.height / 2);
+            ctx.lineTo(player.x + player.width / 2, player.y + player.height / 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Effet de propulsion
+            ctx.fillStyle = '#ff9900';
+            ctx.beginPath();
+            ctx.moveTo(player.x - player.width / 4, player.y + player.height / 2);
+            ctx.lineTo(player.x, player.y + player.height / 2 + 20);
+            ctx.lineTo(player.x + player.width / 4, player.y + player.height / 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Effet de lueur
+            ctx.shadowColor = 'var(--player-color)';
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // Dessin des balles
+        function drawBullets() {
+            ctx.fillStyle = 'var(--bullet-color)';
+            bullets.forEach(bullet => {
+                // Effet de lueur
+                ctx.shadowColor = 'var(--bullet-color)';
+                ctx.shadowBlur = 15;
+
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.shadowBlur = 0;
+
+                // Effet de traînée
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y + 10, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'var(--bullet-color)';
+            });
+        }
+
+        // Dessin des ennemis
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                // Choisir la couleur en fonction du type
+                ctx.fillStyle = enemy.type === 'SPECIAL' ? ASTEROID_TYPES.SPECIAL.color : ASTEROID_TYPES.NORMAL.color;
+
+                // Effet de lueur
+                ctx.shadowColor = enemy.type === 'SPECIAL' ? ASTEROID_TYPES.SPECIAL.color : ASTEROID_TYPES.NORMAL.color;
+                ctx.shadowBlur = 15;
+
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.shadowBlur = 0;
+
+                // Détails sur les astéroïdes
+                ctx.strokeStyle = enemy.type === 'SPECIAL' ? '#888888' : '#b8860b';
+                ctx.lineWidth = 2;
+
+                // Pour les astéroïdes spéciaux, afficher un motif différent
+                if (enemy.type === 'SPECIAL') {
+                    // Motif en forme de cristal pour les astéroïdes spéciaux
+                    ctx.beginPath();
+                    ctx.moveTo(enemy.x, enemy.y - enemy.radius * 0.7);
+                    ctx.lineTo(enemy.x + enemy.radius * 0.5, enemy.y - enemy.radius * 0.2);
+                    ctx.lineTo(enemy.x + enemy.radius * 0.7, enemy.y + enemy.radius * 0.3);
+                    ctx.lineTo(enemy.x + enemy.radius * 0.3, enemy.y + enemy.radius * 0.7);
+                    ctx.lineTo(enemy.x - enemy.radius * 0.3, enemy.y + enemy.radius * 0.7);
+                    ctx.lineTo(enemy.x - enemy.radius * 0.7, enemy.y + enemy.radius * 0.3);
+                    ctx.lineTo(enemy.x - enemy.radius * 0.5, enemy.y - enemy.radius * 0.2);
+                    ctx.closePath();
+                    ctx.stroke();
+
+                    // Afficher les points de vie restants pour les astéroïdes spéciaux
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(enemy.hits + '/' + enemy.maxHits, enemy.x, enemy.y + 5);
+                } else {
+                    // Motif normal pour les astéroïdes standards
+                    ctx.beginPath();
+                    ctx.arc(enemy.x - enemy.radius / 3, enemy.y - enemy.radius / 3, enemy.radius / 3, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(enemy.x + enemy.radius / 2, enemy.y + enemy.radius / 4, enemy.radius / 4, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+        }
+
+        // Dessin des explosions
+        function drawExplosions() {
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                const explosion = explosions[i];
+                const gradient = ctx.createRadialGradient(
+                    explosion.x, explosion.y, 0,
+                    explosion.x, explosion.y, explosion.radius
+                );
+                gradient.addColorStop(0, `rgba(255, 255, 100, ${explosion.life / 10})`);
+                gradient.addColorStop(0.7, `rgba(255, 100, 0, ${explosion.life / 15})`);
+                gradient.addColorStop(1, `rgba(100, 0, 0, 0)`);
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                explosion.life--;
+                if (explosion.life <= 0) {
+                    explosions.splice(i, 1);
+                }
+            }
+        }
+
+        // Mise à jour de la position du joueur
+        function updatePlayer() {
+            if (keys['ArrowLeft'] && player.x - player.width / 2 > 0) {
+                player.x -= player.speed;
+            }
+            if (keys['ArrowRight'] && player.x + player.width / 2 < canvas.width) {
+                player.x += player.speed;
+            }
+            if (keys['ArrowUp'] && player.y - player.height / 2 > 0) {
+                player.y -= player.speed;
+            }
+            if (keys['ArrowDown'] && player.y + player.height / 2 < canvas.height) {
+                player.y += player.speed;
+            }
+        }
+
+        // Mise à jour des balles
+        function updateBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                bullets[i].y -= bullets[i].speed;
+
+                // Supprimer les balles qui sortent de l'écran
+                if (bullets[i].y < 0) {
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+
+        // Mise à jour des ennemis
+        function updateEnemies() {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                // Augmenter la vitesse avec le niveau
+                const speedMultiplier = 1 + (level - 1) * 0.1;
+                enemies[i].y += enemies[i].speed * speedMultiplier;
+
+                // Supprimer les ennemis qui sortent de l'écran
+                if (enemies[i].y > canvas.height) {
+                    enemies.splice(i, 1);
+                }
+            }
+        }
+
+        // Génération d'ennemis
+        function spawnEnemy() {
+            if (enemies.length < gameConfig.maxEnemies) {
+                // Déterminer le type d'astéroïde
+                const isSpecial = Math.random() < gameConfig.specialAsteroidChance;
+                const type = isSpecial ? 'SPECIAL' : 'NORMAL';
+                const asteroidConfig = ASTEROID_TYPES[type];
+
+                const minRadius = asteroidConfig.radius[0];
+                const maxRadius = asteroidConfig.radius[1];
+                const radius = Math.random() * (maxRadius - minRadius) + minRadius;
+
+                enemies.push({
+                    x: Math.random() * (canvas.width - radius * 2) + radius,
+                    y: -radius,
+                    radius: radius,
+                    speed: Math.random() * 2 + gameConfig.enemySpeed - 1,
+                    type: type,
+                    hits: 0,
+                    maxHits: asteroidConfig.hitsRequired
+                });
+            }
+        }
+
+        // Créer une explosion
+        function createExplosion(x, y, color) {
+            explosions.push({
+                x: x,
+                y: y,
+                radius: 30,
+                life: 15,
+                color: color
+            });
+
+            // Créer des particules d'explosion
+            for (let i = 0; i < 20; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    size: Math.random() * 4 + 1,
+                    speedX: (Math.random() - 0.5) * 8,
+                    speedY: (Math.random() - 0.5) * 8,
+                    color: color || `hsl(${Math.random() * 30 + 10}, 100%, 50%)`,
+                    life: Math.random() * 20 + 10
+                });
+            }
+        }
+
+        // Détection des collisions
+        function checkCollisions() {
+            // Collisions balles-ennemis
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const dx = bullets[i].x - enemies[j].x;
+                    const dy = bullets[i].y - enemies[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < bullets[i].radius + enemies[j].radius) {
+                        // Collision détectée
+                        bullets.splice(i, 1);
+
+                        // Gérer les dégâts en fonction du type d'astéroïde
+                        enemies[j].hits++;
+
+                        // Créer une petite explosion à l'impact
+                        createExplosion(
+                            enemies[j].x,
+                            enemies[j].y,
+                            enemies[j].type === 'SPECIAL' ? ASTEROID_TYPES.SPECIAL.color : ASTEROID_TYPES.NORMAL.color
+                        );
+
+                        // Vérifier si l'astéroïde est détruit
+                        if (enemies[j].hits >= enemies[j].maxHits) {
+                            // Astéroïde détruit
+                            const points = enemies[j].type === 'SPECIAL' ?
+                                ASTEROID_TYPES.SPECIAL.points :
+                                ASTEROID_TYPES.NORMAL.points;
+
+                            score += points * level;
+
+                            // Créer une grosse explosion
+                            createExplosion(
+                                enemies[j].x,
+                                enemies[j].y,
+                                enemies[j].type === 'SPECIAL' ? ASTEROID_TYPES.SPECIAL.color : ASTEROID_TYPES.NORMAL.color
+                            );
+
+                            enemies.splice(j, 1);
+                        }
+
+                        updateUI();
+                        break;
+                    }
+                }
+            }
+
+            // Collisions joueur-ennemis
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const dx = player.x - enemies[i].x;
+                const dy = player.y - enemies[i].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < player.width / 2 + enemies[i].radius) {
+                    // Collision détectée
+                    createExplosion(enemies[i].x, enemies[i].y, ASTEROID_TYPES.NORMAL.color);
+                    enemies.splice(i, 1);
+                    lives--;
+                    updateUI();
+
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Tirer une balle
+        function shoot() {
+            // Limiter la cadence de tir
+            const now = Date.now();
+            if (now - player.lastShot < player.shootDelay) return;
+
+            bullets.push({
+                x: player.x,
+                y: player.y - player.height / 2,
+                radius: 6,
+                speed: gameConfig.bulletSpeed
+            });
+
+            // Cadence de tir
+            player.lastShot = now;
+        }
+
+        // Mettre le jeu en pause
+        function togglePause() {
+            if (!gameActive) return;
+
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                pauseScreen.style.display = 'flex';
+            } else {
+                pauseScreen.style.display = 'none';
+                lastTime = 0;
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Boucle de jeu principale
+        function gameLoop(timestamp) {
+            if (!gameActive || gamePaused) return;
+
+            // Calculer le delta time pour une animation fluide
+            if (!lastTime) lastTime = timestamp;
+            deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+
+            // Effacer le canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dessiner le fond
+            drawBackground();
+
+            // Mettre à jour les éléments
+            updatePlayer();
+            updateBullets();
+            updateEnemies();
+
+            // Générer des ennemis
+            enemySpawnCounter++;
+            const spawnRate = Math.max(10, gameConfig.enemySpawnRate - (level - 1) * 5);
+            if (enemySpawnCounter >= spawnRate) {
+                spawnEnemy();
+                enemySpawnCounter = 0;
+            }
+
+            // Vérifier les collisions
+            checkCollisions();
+
+            // Dessiner les éléments
+            drawParticles();
+            drawPlayer();
+            drawBullets();
+            drawEnemies();
+            drawExplosions();
+
+            // Continuer la boucle
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Démarrage du jeu
+        function startGame() {
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            pauseScreen.style.display = 'none';
+            gameActive = true;
+            gamePaused = false;
+            player.lastShot = 0;
+            initGame();
+            lastTime = 0;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Retour au menu principal
+        function goToMenu() {
+            gameActive = false;
+            startScreen.style.display = 'flex';
+            gameOverScreen.style.display = 'none';
+            pauseScreen.style.display = 'none';
+        }
+
+        // Fin du jeu
+        function gameOver() {
+            gameActive = false;
+            finalScoreDisplay.textContent = `Votre score: ${score}`;
+
+            // Mettre à jour le meilleur score
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('asteroidAssaultHighScore', highScore);
+                highScoreValue.textContent = highScore;
+                bestScoreDisplay.textContent = highScore;
+
+                // Afficher un message spécial pour le nouveau record
+                finalScoreDisplay.textContent += " - Nouveau Record!";
+            }
+
+            gameOverScreen.style.display = 'flex';
+        }
+
+        // Changer la difficulté
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            gameConfig = config[difficulty];
+
+            // Mettre à jour l'apparence des boutons
+            easyBtn.classList.remove('active');
+            mediumBtn.classList.remove('active');
+            hardBtn.classList.remove('active');
+
+            if (difficulty === 'easy') easyBtn.classList.add('active');
+            if (difficulty === 'medium') mediumBtn.classList.add('active');
+            if (difficulty === 'hard') hardBtn.classList.add('active');
+        }
+
+        // Fonctions pour les boutons de contrôle
+        function showInstructions() {
+            alert("CONTROLES DU JEU:\n\n• Flèches directionnelles: Déplacer votre vaisseau\n• Barre d'espace: Tirer sur les astéroïdes\n• Touche P: Mettre le jeu en pause\n\nOBJECTIF:\n• Évitez les astéroïdes et tirez dessus pour gagner des points\n• Astéroïdes jaunes: 10 points (1 coup)\n• Astéroïdes gris: 50 points (3 coups)\n• Survivez le plus longtemps possible!");
+        }
+
+        function resetHighScore() {
+            if (confirm("Voulez-vous vraiment réinitialiser votre meilleur score ?")) {
+                highScore = 0;
+                localStorage.setItem('asteroidAssaultHighScore', highScore);
+                highScoreValue.textContent = highScore;
+                bestScoreDisplay.textContent = highScore;
+                alert("Meilleur score réinitialisé !");
+            }
+        }
+
+        // Gestion des événements clavier
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+
+            if (e.key === ' ' && gameActive && !gamePaused) {
+                shoot();
+                e.preventDefault();
+            }
+
+            if (e.key === 'p' || e.key === 'P') {
+                togglePause();
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Écouteurs de boutons
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        resumeButton.addEventListener('click', togglePause);
+        menuButton.addEventListener('click', goToMenu);
+        menuButtonPause.addEventListener('click', goToMenu);
+
+        easyBtn.addEventListener('click', () => setDifficulty('easy'));
+        mediumBtn.addEventListener('click', () => setDifficulty('medium'));
+        hardBtn.addEventListener('click', () => setDifficulty('hard'));
+
+        // Initialisation
+        setDifficulty('easy');
+        highScoreValue.textContent = highScore;
+        bestScoreDisplay.textContent = highScore;
+    </script>
+    
+    <!-- Script utilitaires pour le jeu -->
+    <script src="js/jeu.js" defer></script>
+</body>
+</html>

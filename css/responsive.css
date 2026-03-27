@@ -1,0 +1,130 @@
+/* Responsive */
+@media (max-width: 1200px) {
+    .product-image {
+        height: 350px;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero .container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-content {
+        max-width: 100%;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-tags {
+        justify-content: center;
+    }
+    
+    .about-content {
+        flex-direction: column;
+    }
+    
+    .about-image {
+        order: -1;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .product-image {
+        height: 320px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .nav-links li {
+        margin: 5px 0;
+    }
+    
+    .nav-links a {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-image {
+        height: 280px;
+        padding: 20px;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .product-info {
+        padding: 25px;
+    }
+    
+    .product-name {
+        font-size: 1.8rem;
+    }
+    
+    .product-flavor {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .cta-text {
+        font-size: 1.2rem;
+    }
+    
+    .products-cta {
+        padding: 25px;
+    }
+    
+    .hero, .products, .about {
+        padding: 50px 0;
+    }
+    
+    .product-image {
+        height: 250px;
+    }
+}
