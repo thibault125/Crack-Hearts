@@ -1,0 +1,64 @@
+/* Section Hero */
+.hero {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--primary-light) 0%, #fff0e6 100%);
+}
+
+.hero .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.hero-text {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.hero-text strong {
+    color: var(--primary-color);
+}
+
+.hero-tags {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background-color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    color: var(--primary-color);
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.mascotte-img {
+    max-width: 400px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
