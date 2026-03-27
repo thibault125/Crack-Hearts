@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crack Hearts - Personnalisez votre commande</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <style>
+        .offre-container {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #fff5e8 0%, #ffe8d6 100%);
+            min-height: calc(100vh - 300px);
+        }
+        
+        .offre-title {
+            font-size: 3rem;
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .offre-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Fiches produits */
+        .products-grid-offre {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .product-card-offre {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .product-card-offre:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image-offre {
+            height: 250px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .product-image-offre img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
+        .product-info-offre {
+            padding: 25px;
+        }
+        
+        .product-name-offre {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .product-flavor-offre {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .product-price-offre {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .product-price-offre small {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+        
+        .product-desc-offre {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        
+        /* Sélecteur de quantité */
+        .quantity-selector-offre {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .qty-btn-offre {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary-color);
+        }
+        
+        .qty-btn-offre:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .qty-value-offre {
+            width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 0;
+            background: white;
+        }
+        
+        .subtotal-offre {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        /* Panier récapitulatif */
+        .cart-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+        }
+        
+        .cart-section h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cart-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-info {
+            flex: 2;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .cart-item-flavor {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .cart-item-qty button {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .cart-item-qty span {
+            width: 30px;
+            text-align: center;
+        }
+        
+        .cart-item-price {
+            flex: 1;
+            text-align: right;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .cart-item-remove {
+            margin-left: 15px;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .cart-item-remove:hover {
+            color: #ff4444;
+            transform: scale(1.1);
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-top: 2px solid var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .cart-total span:last-child {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .btn-commander {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-commander:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-vider {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .btn-vider:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        
+        .confirmation-message {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .confirmation-message.show {
+            transform: translateX(0);
+        }
+        
+        .layout-2cols {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 40px;
+            align-items: start;
+        }
+        
+        @media (max-width: 992px) {
+            .layout-2cols {
+                grid-template-columns: 1fr;
+            }
+            .cart-section {
+                position: static;
+                margin-top: 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .offre-title {
+                font-size: 2rem;
+            }
+            .product-card-offre {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Logo_Logo Orange.png" alt="Crack Hearts" class="logo-img">
+                    </a>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="index.html#produits">Produits</a></li>
+                    <li><a href="index.html#apropos">À propos</a></li>
+                    <li><a href="jeu.html">Mini-Jeu</a></li>
+                    <li><a href="https://www.tiktok.com/@crackhearth69" target="_blank">TikTok</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="offre-container">
+        <div class="container">
+            <h1 class="offre-title">🛒 Commandez vos Crack Hearts</h1>
+            <p class="offre-subtitle">
+                Choisissez librement les saveurs que vous voulez, en toute quantité.<br>
+                Vous pouvez prendre 1 sachet d'une saveur, 5 d'une autre, ou composer votre assortiment parfait !
+            </p>
+
+            <div class="layout-2cols">
+                <!-- Colonne gauche : fiches produits -->
+                <div>
+                    <div class="products-grid-offre">
+                        <!-- Haine & Passion - Oignon Crémeux - 1,53€ -->
+                        <div class="product-card-offre" data-produit="haine-passion" data-prix="1.53" data-nom="Haine & Passion" data-parfum="Oignon Crémeux">
+                            <div class="product-image-offre">
+                                <img src="Affiche Haine & Passion.jpg" alt="Haine & Passion">
+                            </div>
+                            <div class="product-info-offre">
+                                <h3 class="product-name-offre">Haine & Passion</h3>
+                                <p class="product-flavor-offre">Oignon Crémeux</p>
+                                <div class="product-price-offre">1,53 € <small>le sachet (150g)</small></div>
+                                <p class="product-desc-offre">
+                                    Une alliance audacieuse entre l'intensité de l'oignon et la douceur crémeuse. 
+                                    Parfait pour les amateurs de contrastes subtils.
+                                </p>
+                                <div class="quantity-selector-offre">
+                                    <span>Quantité :</span>
+                                    <div class="quantity-controls">
+                                        <button class="qty-btn-offre qty-minus">-</button>
+                                        <span class="qty-value-offre">0</span>
+                                        <button class="qty-btn-offre qty-plus">+</button>
+                                    </div>
+                                    <span class="subtotal-offre">0,00 €</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Douce Tentations - BBQ Bacon - 1,39€ -->
+                        <div class="product-card-offre" data-produit="douce-tentations" data-prix="1.39" data-nom="Douce Tentations" data-parfum="BBQ Bacon">
+                            <div class="product-image-offre">
+                                <img src="Affiche Douce Tentations.jpg" alt="Douce Tentations">
+                            </div>
+                            <div class="product-info-offre">
+                                <h3 class="product-name-offre">Douce Tentations</h3>
+                                <p class="product-flavor-offre">BBQ Bacon</p>
+                                <div class="product-price-offre">1,39 € <small>le sachet (150g)</small></div>
+                                <p class="product-desc-offre">
+                                    Un mariage savoureux entre le fumé du barbecue et le bacon croustillant. 
+                                    La référence pour les amateurs de goûts puissants.
+                                </p>
+                                <div class="quantity-selector-offre">
+                                    <span>Quantité :</span>
+                                    <div class="quantity-controls">
+                                        <button class="qty-btn-offre qty-minus">-</button>
+                                        <span class="qty-value-offre">0</span>
+                                        <button class="qty-btn-offre qty-plus">+</button>
+                                    </div>
+                                    <span class="subtotal-offre">0,00 €</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coeur Brulant - Piment Ultra Fort - 1,75€ -->
+                        <div class="product-card-offre" data-produit="coeur-brulant" data-prix="1.75" data-nom="Coeur Brulant" data-parfum="Piment Ultra Fort">
+                            <div class="product-image-offre">
+                                <img src="Affiche Coeur Brulant.jpg" alt="Coeur Brulant">
+                            </div>
+                            <div class="product-info-offre">
+                                <h3 class="product-name-offre">Coeur Brulant</h3>
+                                <p class="product-flavor-offre">Piment Ultra Fort</p>
+                                <div class="product-price-offre">1,75 € <small>le sachet (150g)</small></div>
+                                <p class="product-desc-offre">
+                                    Pour les plus audacieux ! Une explosion de piment qui enflammera vos papilles 
+                                    et défiera vos sens. Réservé aux vrais passionnés.
+                                </p>
+                                <div class="quantity-selector-offre">
+                                    <span>Quantité :</span>
+                                    <div class="quantity-controls">
+                                        <button class="qty-btn-offre qty-minus">-</button>
+                                        <span class="qty-value-offre">0</span>
+                                        <button class="qty-btn-offre qty-plus">+</button>
+                                    </div>
+                                    <span class="subtotal-offre">0,00 €</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne droite : Panier récapitulatif -->
+                <div class="cart-section">
+                    <h2><i class="fas fa-shopping-basket"></i> Votre panier</h2>
+                    <div id="cart-items-container" class="cart-items">
+                        <div class="empty-cart">
+                            <i class="fas fa-heart-broken" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Votre panier est vide</p>
+                            <p style="font-size: 0.9rem;">Ajoutez des sachets pour commander</p>
+                        </div>
+                    </div>
+                    <div class="cart-total">
+                        <span>Total TTC :</span>
+                        <span id="cart-total">0,00 €</span>
+                    </div>
+                    <button id="commander-btn" class="btn-commander">
+                        <i class="fas fa-heart"></i> Valider ma commande
+                    </button>
+                    <button id="vider-panier-btn" class="btn-vider">
+                        <i class="fas fa-trash-alt"></i> Vider le panier
+                    </button>
+                    <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-light);">
+                        🚚 Livraison offerte dès 30€ d'achat<br>
+                        💳 Paiement sécurisé
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="Logo_Logo Orange.png" alt="Crack Hearts" class="footer-logo-img">
+                    <p class="footer-tagline">Always deliciously distracting</p>
+                    <p>L'apéro qui fait battre les cœurs !</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="index.html">Accueil</a></li>
+                            <li><a href="index.html#produits">Nos produits</a></li>
+                            <li><a href="index.html#apropos">À propos</a></li>
+                            <li><a href="jeu.html">Mini-jeu</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Suivez-nous</h4>
+                        <ul>
+                            <li><a href="https://www.tiktok.com/@crackhearth69" target="_blank">
+                                <i class="fab fa-tiktok"></i> TikTok @crackhearth69
+                            </a></li>
+                            <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                            <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Crack Hearts. Tous droits réservés.</p>
+                <p>Site créé avec ❤️ pour les amateurs de snacks originaux</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="confirmation-message" class="confirmation-message">
+        🎉 Commande ajoutée au panier !
+    </div>
+
+    <script>
+        // Produits disponibles avec leurs prix
+        const produits = {
+            'haine-passion': {
+                id: 'haine-passion',
+                nom: 'Haine & Passion',
+                parfum: 'Oignon Crémeux',
+                prix: 1.53,
+                image: 'Affiche Haine & Passion.jpg'
+            },
+            'douce-tentations': {
+                id: 'douce-tentations',
+                nom: 'Douce Tentations',
+                parfum: 'BBQ Bacon',
+                prix: 1.39,
+                image: 'Affiche Douce Tentations.jpg'
+            },
+            'coeur-brulant': {
+                id: 'coeur-brulant',
+                nom: 'Coeur Brulant',
+                parfum: 'Piment Ultra Fort',
+                prix: 1.75,
+                image: 'Affiche Coeur Brulant.jpg'
+            }
+        };
+
+        // Panier : stockage des quantités par produit
+        let panier = {
+            'haine-passion': 0,
+            'douce-tentations': 0,
+            'coeur-brulant': 0
+        };
+
+        // Fonction pour mettre à jour l'affichage des quantités dans les fiches produits
+        function updateProductDisplay() {
+            for (const [produitId, quantite] of Object.entries(panier)) {
+                const productCard = document.querySelector(`.product-card-offre[data-produit="${produitId}"]`);
+                if (productCard) {
+                    const qtySpan = productCard.querySelector('.qty-value-offre');
+                    const subtotalSpan = productCard.querySelector('.subtotal-offre');
+                    const prix = produits[produitId].prix;
+                    
+                    if (qtySpan) qtySpan.textContent = quantite;
+                    if (subtotalSpan) subtotalSpan.textContent = `${(prix * quantite).toFixed(2)} €`;
+                }
+            }
+        }
+
+        // Fonction pour mettre à jour l'affichage du panier
+        function updateCartDisplay() {
+            const cartContainer = document.getElementById('cart-items-container');
+            const totalSpan = document.getElementById('cart-total');
+            let total = 0;
+            let hasItems = false;
+
+            // Vider le conteneur sauf le message vide
+            cartContainer.innerHTML = '';
+
+            for (const [produitId, quantite] of Object.entries(panier)) {
+                if (quantite > 0) {
+                    hasItems = true;
+                    const produit = produits[produitId];
+                    const subtotal = produit.prix * quantite;
+                    total += subtotal;
+
+                    // Créer l'élément du panier
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${produit.nom}</div>
+                            <div class="cart-item-flavor">${produit.parfum}</div>
+                        </div>
+                        <div class="cart-item-qty">
+                            <button class="cart-qty-minus" data-id="${produitId}">-</button>
+                            <span>${quantite}</span>
+                            <button class="cart-qty-plus" data-id="${produitId}">+</button>
+                        </div>
+                        <div class="cart-item-price">${subtotal.toFixed(2)} €</div>
+                        <div class="cart-item-remove" data-id="${produitId}">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    `;
+                    cartContainer.appendChild(cartItem);
+                }
+            }
+
+            if (!hasItems) {
+                cartContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-heart-broken" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>Votre panier est vide</p>
+                        <p style="font-size: 0.9rem;">Ajoutez des sachets pour commander</p>
+                    </div>
+                `;
+            }
+
+            totalSpan.textContent = `${total.toFixed(2)} €`;
+
+            // Ajouter les événements aux boutons du panier
+            document.querySelectorAll('.cart-qty-minus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const produitId = btn.dataset.id;
+                    modifierQuantite(produitId, -1);
+                });
+            });
+
+            document.querySelectorAll('.cart-qty-plus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const produitId = btn.dataset.id;
+                    modifierQuantite(produitId, 1);
+                });
+            });
+
+            document.querySelectorAll('.cart-item-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const produitId = btn.dataset.id;
+                    modifierQuantite(produitId, -panier[produitId]);
+                });
+            });
+        }
+
+        // Fonction pour modifier la quantité d'un produit
+        function modifierQuantite(produitId, delta) {
+            const nouvelleQuantite = Math.max(0, panier[produitId] + delta);
+            panier[produitId] = nouvelleQuantite;
+            
+            // Mettre à jour l'affichage
+            updateProductDisplay();
+            updateCartDisplay();
+            
+            // Afficher un petit message si ajout
+            if (delta > 0) {
+                const produit = produits[produitId];
+                showConfirmationMessage(`+1 sachet de ${produit.nom} ajouté au panier`);
+            }
+        }
+
+        // Fonction pour vider le panier
+        function viderPanier() {
+            if (confirm('Voulez-vous vraiment vider votre panier ?')) {
+                panier = {
+                    'haine-passion': 0,
+                    'douce-tentations': 0,
+                    'coeur-brulant': 0
+                };
+                updateProductDisplay();
+                updateCartDisplay();
+                showConfirmationMessage('Panier vidé');
+            }
+        }
+
+        // Fonction pour valider la commande
+        function validerCommande() {
+            const articles = [];
+            let total = 0;
+            
+            for (const [produitId, quantite] of Object.entries(panier)) {
+                if (quantite > 0) {
+                    const produit = produits[produitId];
+                    articles.push(`${quantite} x ${produit.nom} (${produit.parfum})`);
+                    total += produit.prix * quantite;
+                }
+            }
+            
+            if (articles.length === 0) {
+                alert('Votre panier est vide. Ajoutez des sachets avant de commander !');
+                return;
+            }
+            
+            const message = `✅ COMMANDE CRACK HEARTS ✅\n\n` +
+                `📦 Détail de votre commande :\n` +
+                articles.map(a => `   • ${a}`).join('\n') +
+                `\n\n💰 Total : ${total.toFixed(2)} €\n\n` +
+                `📦 Livraison : ${total >= 30 ? 'OFFERTE' : (total >= 20 ? '3,90 €' : '5,90 €')}\n\n` +
+                `Merci pour votre commande ! ❤️\n` +
+                `Un email de confirmation vous sera envoyé.`;
+            
+            alert(message);
+            showConfirmationMessage(`🎉 Commande validée ! Total : ${total.toFixed(2)} €`);
+            
+            // Optionnel : réinitialiser le panier après commande
+            // viderPanier();
+        }
+
+        // Afficher un message de confirmation temporaire
+        function showConfirmationMessage(message) {
+            const msgDiv = document.getElementById('confirmation-message');
+            msgDiv.textContent = message || "✓ Ajouté au panier !";
+            msgDiv.classList.add('show');
+            setTimeout(() => {
+                msgDiv.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialiser les événements sur les boutons +/- des fiches produits
+        function initProductButtons() {
+            document.querySelectorAll('.product-card-offre').forEach(card => {
+                const produitId = card.dataset.produit;
+                const minusBtn = card.querySelector('.qty-minus');
+                const plusBtn = card.querySelector('.qty-plus');
+                
+                minusBtn.addEventListener('click', () => {
+                    modifierQuantite(produitId, -1);
+                });
+                
+                plusBtn.addEventListener('click', () => {
+                    modifierQuantite(produitId, 1);
+                });
+            });
+        }
+
+        // Événements globaux
+        document.getElementById('commander-btn').addEventListener('click', validerCommande);
+        document.getElementById('vider-panier-btn').addEventListener('click', viderPanier);
+
+        // Initialisation
+        initProductButtons();
+        updateProductDisplay();
+        updateCartDisplay();
+    </script>
+</body>
+</html>
